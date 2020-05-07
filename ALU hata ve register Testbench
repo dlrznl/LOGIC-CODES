@@ -1,0 +1,60 @@
+/* tb_lab4_d_u_p4
+* Hazırlayanlar:
+* DİLARA ÜZÜNLÜ 
+* Notlar:
+* ELM235 2020 Bahar Lab4 ALU hata ve register Testbench
+*/
+
+module tb_lab4_d_u_p4(
+input logic clk ,
+input logic [31:0] a, b,
+input logic [ 3:0] op,
+output logic [31:0] s, hata,
+output logic n, z, v, c,cout);
+logic [31:0] a_reg , b_reg , s_reg , hata_reg;
+logic [3:0] op_reg;
+logic v_reg, c_reg, z_reg, n_reg,cout_reg;
+always_ff @(posedge clk) begin 
+	b_reg <= b; 
+	a_reg <= a;
+	op_reg <= op;	 			//önceki şablonda açıklama yapıldı
+end
+always_comb begin
+case(op_reg)
+4'b0000: {cout_reg,s_reg}=a_reg+b_reg;
+4'b1000: s_reg=a_reg-b_reg;
+4'b0001:  s_reg=a_reg>>b_reg[31:27];
+4'b0010:
+  if(a_reg>b_reg)
+ s_reg=1;		
+  else
+	s_reg=0;
+4'b0011:
+ if($signed(a_reg)>$signed(b_reg))
+	s_reg=1; 						
+ else
+	s_reg=0;
+4'b0100: s_reg=a_reg^b_reg;
+4'b1101: s_reg=a_reg>>>b_reg[31:27];
+4'b0110: s_reg=a_reg|b_reg;
+4'b0111: s_reg=a_reg&b_reg;
+default: s_reg = hata_reg;
+endcase
+ begin
+  c_reg= (cout_reg==1)? 1:0;
+ z_reg = (s_reg == 32'b0)? 1:0; 
+ n_reg =(s_reg[31]==1)? 1:0;
+ v_reg=(~(a_reg[31]&b_reg[31])^s_reg[31])? 1:0;
+end
+end
+always_ff @(posedge clk)
+ begin 
+    s <= s_reg ; 
+	hata <= hata_reg ;
+	v <= v_reg ;
+	c <= c_reg ; 
+	z <= z_reg ;
+	n <= n_reg ; 
+	cout <= cout_reg ; 
+end
+endmodule
