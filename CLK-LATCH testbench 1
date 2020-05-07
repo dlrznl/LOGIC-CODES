@@ -1,0 +1,30 @@
+/* tb_lab4_du_p1_clk 
+* Hazırlayanlar:
+* DİLARA ÜZÜNLÜ 
+* Notlar:
+* ELM235 2020 Bahar Lab4 CLK-LATCH testbench 
+*/
+
+`timescale 1ns/1ps
+module tb_lab4_du_p1_clk ();	//clk ve rising edge flip flop giriş ve çıkışı belirtildi.
+logic d, clk;
+//logic q1;			 
+logic q2;
+//logic q3;
+//tb_lab4_du_p1_latch uut0(d,clk,q1);	// rising edge flip flop dosyası ile giriş ve çıkışlar 
+tb_lab4_du_p1_rff uut0(d,clk,q2);	//eşleştirildi
+//tb_lab4_du_p1_fff uut0(d,clk,q3);
+always
+	begin				//clk girişini 0 olarak belirle ne 10 ns bekle
+ clk = 0; #10;				//clk girişini 1 yap ve 10 ns bekle 
+ clk = 1; #10;
+end
+initial begin
+d = 0; #7; d = 1; #5; d = 0; #2;		//burada d girişine belirtilen ns ile sinyaller 
+d = 1; #4; d = 0; #3; d = 1; #3;		 // verildi
+d = 0; #2; d = 1; #2; d = 0; #4;
+d = 1; #2; d = 0; #2; d = 1; #6;
+d = 0; #10;				
+$stop; 						//simülasyonu durduruldu						
+end
+endmodule
