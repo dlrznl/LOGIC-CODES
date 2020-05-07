@@ -1,0 +1,15 @@
+/* tb_lab4_du_p2a
+* Hazırlayanlar:
+* DİLARA ÜZÜNLÜ 
+* Notlar:
+* ELM235 2020 Bahar Lab4 Half adder Testbench
+*/
+
+module half_adder(
+  input  i_bit1;
+  input  i_bit2;
+  output s;
+  output c);
+ 
+  assign s   = A ^ B;  // xor
+  assign c = A & B;	//AND
