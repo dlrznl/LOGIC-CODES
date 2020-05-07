@@ -1,0 +1,45 @@
+/* tb_lab5_du_p1.sv
+* Hazırlayanlar: DİLARA ÜZÜNLÜ
+* Notlar:
+* ELM235 2020 Bahar Lab5 - Problem 1 Yukarı serbest sayıcı oluşturulması */
+
+
+//`timescale 1ns/1ps
+module tb_lab5_du_p1(
+input logic reset,en,clk,
+input logic [4:0] psc,
+output logic [4:0] counter,
+output logic tick);
+logic [4:0] counterreg;
+logic tickreg;
+logic [4:0] pscreg;
+logic resetreg,enreg;
+//always begin
+//#5 clk=1;
+//#5 clk=0;
+//end
+always_ff @(posedge clk) begin
+pscreg[4:0] <= psc[4:0];
+enreg <= en;
+end
+
+always_ff @(posedge clk) begin
+if (enreg==1) begin
+    if (!resetreg) 
+        counterreg <= 5'b0; 
+    else  if(clk==1) 
+       counterreg <= counterreg + 1'b1;
+
+		 if(counterreg==pscreg)
+	tickreg<=1;
+else 
+	tickreg<=0;
+	end
+
+end
+always_ff @(posedge clk) begin
+tick <= tickreg;
+counter<= counterreg;
+end
+
+endmodule
