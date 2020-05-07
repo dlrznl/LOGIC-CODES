@@ -1,0 +1,41 @@
+/* tb_lab5_du_p2.sv
+* Hazırlayanlar: DİLARA ÜZÜNLÜ
+* Notlar:
+* ELM235 2020 Bahar Lab5 - Problem 2 Yavaşlatılabilir aşağı sayıcı tasarımı*/
+`timescale 1ns/1ps											
+module lb5(										
+input logic  reset, en,clk,									
+input logic [ 4:0] psc,										
+output logic [15:0] reload,			
+						
+output logic done,tick);					 				
+assign reload=16'hF;										
+logic [15:0] cnt=16'hF;
+;
+tb_lab5_du_p1 uut0(.tick(tick),.psc(psc),.clk(clk),.reset(reset),.en(en));
+
+always_ff @(posedge clk,negedge reset)									
+begin												
+if(en) begin											
+if(!reset)  											
+cnt<=16'b0; 											
+else if(tick==1)	begin							
+     if(clk==1) 
+ 	cnt<=cnt-1'b1;
+else if(tick==0)
+		cnt<=cnt-1'b1;
+ end
+end										
+else  if(!en)										
+cnt=reload; 											
+	
+
+									
+if(cnt==16'h0) 											
+ done=1;
+ else 												        		 							       
+ done=0; 										   
+ if(done==1)
+        cnt<=reload;
+end                                                                        		        
+  endmodule
