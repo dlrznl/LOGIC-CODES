@@ -1,0 +1,17 @@
+/* tb_lab4_du_p2b
+* Hazırlayanlar:
+* DİLARA ÜZÜNLÜ 
+* Notlar:
+* ELM235 2020 Bahar Lab4 Full adder Testbench
+*/
+module fulladder(
+input a, b, cin, 
+output s, cout);
+wire w1, w2, w3;	//lojik kapılar arasındaki wire bağlantısı
+xor(w1,a,b);		//xor1 bağlantısı
+xor(s,w1,cin);		//xor2 bağlantısı
+and(w2,w1,cin);	//and1 bağlantısı
+and(w3,a,b);		//and2 bağlantısı
+or(cout,w2,w3);	//or bağlantısı
+endmodule
+
