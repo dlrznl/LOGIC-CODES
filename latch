@@ -1,0 +1,13 @@
+/* tb_lab4_du_p1_latch
+* Hazırlayanlar:
+* DİLARA ÜZÜNLÜ 
+* Notlar:
+* ELM235 2020 Bahar Lab4 LATCH testbench 
+*/
+`timescale 1ns/1ps
+module tb_lab4_du_p1_latch(input logic d,	//Latch için giriş ve çıkışlar belirlendi
+	input logic  clk,
+	output logic q1);	
+	always_latch
+		if (clk) q1 <= d;		// eğer clk 1 ise d girişini q1 çıkışına aktar
+endmodule
