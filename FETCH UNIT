@@ -1,0 +1,26 @@
+/* tb_lab8_du_p1.sv
+* Hazırlayanlar: DİLARA ÜZÜNLÜ
+* ELM235 2020 Bahar Lab8 – Problem 1a Instruction Fetch ünitesi*/                    
+
+
+module tb_lab8_du_p1 (
+input logic clk, reset,
+output logic [ 31 : 0 ] pc, 
+input logic pc_update, 
+input logic [ 31 : 0 ] pc_ne
+);
+logic [ 31 : 0 ] pc_reg;
+
+always_ff @(posedge clk, negedge reset)  begin
+
+if(!reset) begin
+	pc_reg=32'b0;
+	pc=pc_reg;end
+else if(pc_update)begin
+	pc_reg[31:0]=pc_new[31:0];
+	pc=pc_reg;end
+else if (!pc_update) begin
+	pc_reg[31:0]=pc_reg[31:0]+4'b0100;
+	pc=pc_reg;end
+end
+endmodule
