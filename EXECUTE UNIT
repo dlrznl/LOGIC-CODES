@@ -1,0 +1,252 @@
+/* tb_lab8_du_p3.sv
+* Hazırlayanlar: DİLARA ÜZÜNLÜ
+* ELM235 2020 Bahar Lab8 – Problem 2 Execute ünitesi*/                    
+
+module tb_lab8_du_p3 (
+input reset,clk,
+input logic [4:0] rs1,
+input logic [4:0] rs2,
+input logic [ 31 : 0 ] imm,
+input logic [ 3 : 0 ] opcode,
+input logic [ 3 : 0 ] funct, // alu veya branch ops
+output logic [ 31 : 0 ] sonuc, // duruma gore ya rd datas? ya yeni pc adresi
+output logic [ 31 : 0 ] pc, // execute dan gelen pc güncellemeleri
+input logic pc_update, // execute pc_update sinyaline baglanacak
+input logic [ 31 : 0 ] pc_new,// // branch basarili, pc yi güncelle
+output logic we, // rd yi güncelle
+output logic hata
+);
+//tb_lab7_p2 dut0(rs1,rs2,rs1_data,rs2_data);
+tb_lab8_du_p1 dut0(.clk(clk),.reset(reset),.pc(pc),.pc_update(pc_update),.pc_new(pc_new));
+
+always_comb  begin
+case(opcode)
+4'b0001: begin//r tipi
+		//sub
+		if(funct==4'b1000) begin
+			if (pc_update ==0) begin
+			sonuc=rs1 - rs2;
+			hata = 0;
+			we = 1;end
+		end
+	////////////////////////////////////////////
+		//add
+		if(funct==4'b0) begin
+			sonuc=rs1 + rs2;
+			hata = 0;
+			if (pc_update ==0)
+			we = 1;
+		end
+////////////////////////////////////////////
+		//and
+		if(funct==4'b0111) begin
+			sonuc=rs1 & rs2;
+			hata = 0;
+			if (pc_update ==0)
+			we = 1;
+		end
+////////////////////////////////////////////
+		//or
+		if(funct==4'b0110) begin
+			sonuc=rs1 | rs2;
+			hata = 0;
+			if (pc_update ==0)
+			we = 1;
+		end////////////////////////////////////////////
+		//eor
+		if(funct==4'b0100) begin
+			sonuc=rs1 ^ rs2;
+			hata = 0;
+			if (pc_update ==0)
+			we = 1;
+		end////////////////////////////////////////////
+		//lsl
+		if(funct==4'b0001) begin
+			sonuc=rs1 << rs2;
+			hata = 0;
+			if (pc_update ==0)
+			we = 1;
+		end////////////////////////////////////////////
+		//lsr
+		if(funct==4'b0101) begin
+			sonuc=rs1 >> rs2;
+			hata = 0;
+			if (pc_update ==0)
+			we = 1;
+		end////////////////////////////////////////////
+		//asr
+		if(funct==4'b0) begin
+			sonuc=rs1+rs2;
+			hata = 0;
+			if (pc_update ==0)
+			we = 1;
+		end
+	end
+4'b0011:begin//i tipi
+	//////////////////////////////////////////////////
+		//addi
+		if(funct==4'b0) begin
+			sonuc=rs1 + rs2;
+			hata = 0;
+			if (pc_update ==0)
+			we = 1;
+			
+		end
+		//////////////////////////////////////////////////
+		//andi
+		if(funct==4'b1110) begin
+			sonuc=rs1&rs2;
+			hata = 0;
+			if (pc_update ==0)
+			we = 1;
+			
+		end//////////////////////////////////////////////////
+		//ori
+		if(funct==4'b1100) begin
+			sonuc=rs1 | rs2;
+			hata = 0;
+			if (pc_update ==0)
+			we = 1;
+			
+		end//////////////////////////////////////////////////
+		//eori
+		if(funct==4'b1000) begin
+			sonuc=rs1^rs2;
+			hata = 0;
+			if (pc_update ==0)
+			we = 1;
+			
+		end//////////////////////////////////////////////////
+		//lsli
+		if(funct==4'b0010) begin
+			sonuc=rs1 << rs2;
+			hata = 0;
+			if (pc_update ==0)
+			we = 1;
+	
+		end//////////////////////////////////////////////////
+		//lsri
+		if(funct==4'b1010) begin
+			sonuc=rs1 >> rs2;
+			hata = 0;
+			if (pc_update ==0)
+			we = 1; 
+			
+		end
+
+end
+	
+4'b0111:begin
+//////////////////////////////////////////////////
+		//mov
+		
+			sonuc[31:0]=imm[31:0];
+			hata = 0;
+			if (pc_update ==0)
+			we = 1;
+		
+end
+4'b1111:begin
+
+//////////////////////////////////////////////////
+		//b
+		if(funct==4'b0011) begin
+			if (pc_update ==0) begin
+			sonuc[31:0]=pc[31:0];
+			hata = 0;
+			we = 1;end
+			else
+			sonuc[31:0]<=pc[31:0];
+			we = 1;
+			hata = 0;
+			end
+//////////////////////////////////////////////////
+		//beq
+		if(funct==4'b0000) begin
+			if(rs1==rs2) begin
+			if (pc_update ==1)begin
+			sonuc[31:0]=pc[31:0];
+			hata = 0;
+			we = 0;end 
+end
+		else begin
+		if (pc_update ==0);begin
+		we = 1;
+		sonuc[31:0]=pc[31:0];	end
+		end
+	end
+//////////////////////////////////////////////////
+		//bne
+		if(funct==4'b0001) begin
+			if(rs1!=rs2) begin
+			if (pc_update ==1) begin
+			sonuc[31:0]=pc[31:0];
+			hata = 0;
+			we = 0;end
+	end
+		else begin
+		if (pc_update ==0) begin
+		we = 1;
+		sonuc[31:0]=pc[31:0];	end	
+		end
+	end
+//////////////////////////////////////////////////
+		//blt
+		if(funct==4'b0001) begin
+			if($signed(rs1)<$signed(rs2)) begin
+			if (pc_update ==1) begin 
+			sonuc[31:0]=pc[31:0];
+			hata = 0;	
+			we = 0;end end
+		else begin
+		if (pc_update ==0) begin
+		we = 1;
+		sonuc[31:0]=pc[31:0];	end	
+		end
+	end
+//////////////////////////////////////////////////
+		//bge
+		if(funct==4'b0110) begin
+			if(!(rs1^rs2)) begin
+		if (pc_update ==1) begin
+			sonuc[31:0]=pc[31:0];
+			hata = 0;we = 0;end  end
+		else begin
+		if (pc_update ==0) begin
+		we = 1;
+		sonuc[31:0]=pc[31:0];
+end		
+		end
+	end
+//////////////////////////////////////////////////
+		//bltu
+		if(funct==4'b0100) begin
+			if($unsigned(rs1)<$unsigned(rs2)) begin
+	if (pc_update ==1) begin
+			sonuc[31:0]=pc[31:0];
+			hata = 0;
+			we = 0;end
+end
+		else begin
+		if (pc_update ==0) begin
+		we = 1;
+		sonuc[31:0]=pc[31:0];		end
+		end end
+
+//////////////////////////////////////////////////
+		//bgeu
+		if(funct==4'b0110) begin
+			if(!($unsigned(rs1)^$unsigned(rs2))) begin
+	if (pc_update ==1)
+			sonuc[31:0]=pc[31:0];hata = 0; we = 0;end end
+		else be gin
+		if (pc_update ==0) begin
+		we = 1;
+		sonuc[31:0]=pc[31:0];	end	
+		end  end
+             
+default hata=1;
+endcase
+end
+endmodule
+	
