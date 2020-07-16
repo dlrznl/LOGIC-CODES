@@ -1,0 +1,31 @@
+/* tb_lab8_du_p4.sv
+* Hazırlayanlar: DİLARA ÜZÜNLÜ
+* ELM235 2020 Bahar Lab8 – Problem 4 Tek ritimli işlemci ünitesi*/                    
+
+`timescale 1ns/1ps
+module tb_lab8_Du_ppp4(
+input logic clk,reset,we,
+input logic pc_update,
+input logic [31:0] pc_new,
+output logic [31:0] pc,
+input logic [4:0] addr,
+input logic [ 31 : 0 ] komut,
+output logic [4:0] rs1,
+output logic [4:0] rs2,
+output logic [31:0] rs1_data,
+input logic [31:0] rd_data,
+output logic [31:0] rs2_data,
+output logic hata_decode,
+output logic [4:0] rd,
+input  logic [31:0] wbdata,
+input logic [ 3 : 0 ] funct,
+output logic hata_execute,
+input logic [ 3 : 0 ] opcode,
+output logic hata,
+input logic [15:0] din
+);
+tb_lab8_du_p1b uut0(.clk(clk),.reset(reset),.pc(pc),.pc_update(pc_update),.pc_new(pc_new));//fetch
+tb_lab7_p3 dut0(.clk(clk),.reset(reset),.we(we),.rd(rd),.addr(addr),.hata(hata_decode),.rs1(rs1),.rs2(rs2),.rs1_data(rs1_data),.rs2_data(rs2_data));//decode
+tb_lab8_du_p3 umm(.reset(reset),.clk(clk),.addr(addr),.funct(funct),.we(we),.hata(hata_execute),.rs1(rs1),.rs2(rs2),.pc_update(pc_update),.opcode(opcode),.rs1_data(rs1_data),.rs2_data(rs2_data));//execute
+assign hata = hata_execute | hata_decode;
+endmodule
