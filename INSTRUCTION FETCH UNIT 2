@@ -1,0 +1,51 @@
+/* tb_lab8_du_p1.sv
+* Hazırlayanlar: DİLARA ÜZÜNLÜ
+* ELM235 2020 Bahar Lab8 – Problem 1b Instruction Fetch ünitesi*/                    
+module tb_lab8_du_p1b (
+input logic clk, reset,we,
+output logic [ 31 : 0 ] pc, // execute dan gelen pc güncellemeleri
+input logic pc_update,
+output logic [29:0] addr,
+input logic [15:0] din,
+output logic [ 31 : 0 ] komut, // execute pc_update sinyaline baglanacak
+input logic [ 31 : 0 ] pc_new// execute sonic sinyaline baglanacak
+);
+logic [ 31 : 0 ] pc_reg;
+always_ff @(posedge clk, negedge reset)  begin
+if(!reset) begin
+	pc_reg=32'b0;
+	pc=pc_reg;end
+else if(pc_update)begin
+	pc_reg[31:0]=pc_new[31:0];
+	pc=pc_reg;end
+else if (!pc_update) begin
+	pc_reg[31:0]=pc_reg[31:0]+4'b0100;
+	pc=pc_reg;end
+end
+module memory(
+input logic clk, reset, we,
+
+output logic [29:0]  addr,
+input logic [15:0] din,
+output logic [31:0] komut
+);
+integer i;
+logic [31:0] mem [0:63];
+
+initial begin 
+	$readmemb("fib20.mem", mem);
+end
+always_ff @(posedge clk,negedge reset) begin 
+    if (!reset) begin
+	for (i=0; i<8; i=i+1) 	begin
+	mem[i] <= 16'b0;end 
+	end
+    else if (we) begin
+	 addr[29:0]<= pc[29:0];
+	 mem[addr]<= din;
+	 komut <= {2'b0,mem[addr]};
+	end
+end
+endmodule
+memory dut0(.clk(clk), .reset(reset), .we(we),.addr(addr) ,.komut(komut),.din(din));
+endmodule
